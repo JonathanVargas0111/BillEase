@@ -7,9 +7,9 @@ const Header = ({ title, text }) => {
                 <Typography gutterBottom variant="h5" component="div">
                     {title}
                 </Typography>
-                <Typography variant="body2" gutterBottom>
+                {/* <Typography variant="body2" gutterBottom>
                     {text}
-                </Typography>
+                </Typography> */}
             </header>
         </Container>
     )

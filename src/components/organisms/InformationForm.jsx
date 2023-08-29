@@ -1,9 +1,11 @@
 import { Container, Button } from '@mui/material';
-import BillFormFields from '../molecules/BillFormFields';
-import ClientFormFields from '../molecules/ClientFormFields';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
+
+import BillFormFields from '../molecules/BillFormFields';
 import CompanyFormFields from '../molecules/CompanyFormFields';
+import ClientFormFields from '../molecules/ClientFormFields';
+import BillTable from '../molecules/BillTable';
 
 const validationSchema = Yup.object({
   nameCompany: Yup.string().required('Enter Name Company'),
@@ -44,6 +46,8 @@ const InformationForm = () => {
           <BillFormFields formik={formik} />
           <CompanyFormFields formik={formik} />
           <ClientFormFields formik={formik} />
+          <BillTable></BillTable>
+
           <Button color='primary' variant='contained' fullWidth type='submit'>
             Save
           </Button>
