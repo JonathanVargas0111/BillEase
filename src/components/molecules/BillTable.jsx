@@ -1,29 +1,14 @@
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material'
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useState, useEffect } from 'react';
+import DialogProduct from './DialogProduct';
 
-const products = [
-  {
-    id: 0,
-    name: 'Porduct 1',
-    amount: 1,
-    unitPrice: 500,
-    subtotal: 500,
-  },
-  {
-    id: 1,
-    name: 'Porduct 2',
-    amount: 1,
-    unitPrice: 500,
-    subtotal: 500,
-  },
-]
 
-const BillTable = () => {
+const BillTable = ({ listProducts, setListProducts }) => {
 
   const collumns = [
-    { id: 'id', name: 'Id' },
     { id: 'name', name: 'Name' },
     { id: 'amount', name: 'Amount' },
     { id: 'unitPrice', name: 'Unit Price' },
@@ -31,38 +16,57 @@ const BillTable = () => {
     { id: 'actions', name: 'Actions' },
   ]
 
-  const [listProducts, setListProducts] = useState(products);
+
   const [totalPrice, setTotalPrice] = useState(0)
+
+  const [openDialog, openDialogChange] = useState(false)
+  const [titleDialog, titleDialogChange] = useState('Create Product');
+  const [isEdit, setIsEdit] = useState(false)
+  const [product, setProduct] = useState(null)
 
   useEffect(() => {
     calculateTotalPrice()
   }, [listProducts])
 
+
+  const closePopup = () => {
+    openDialogChange(false)
+  }
+  const openPopup = () => {
+    openDialogChange(true)
+  }
+
   const functionAddProduct = () => {
-    handleAddProduct()
-    openpopup();
+    setIsEdit(false)
+    setProduct(null)
+    titleDialogChange('Create Product');
+    openPopup();
   }
 
-  const handleAddProduct = () => {
-
-    const productNew = {
-      id: 2,
-      name: 'Porduct 3',
-      amount: 1,
-      unitPrice: 100,
-      subtotal: 100,
-    }
-    setListProducts([...listProducts, productNew]);
+  const functionEditProduct = (product) => {
+    setIsEdit(true)
+    titleDialogChange('Edit Product');
+    setProduct({ ...product });
+    openPopup();
   }
 
-  const handleEditProduct = (code) => {
-    console.log("Editando product" + code);
-  }
+
+  const handleAddProduct = (newProduct) => {
+    setListProducts([...listProducts, newProduct]); // Usa la función pasada desde InformationForm
+  };
+
+  const handleEditProduct = (updateProduct) => {
+    const updatedListProducts = listProducts.map((product) =>
+      product.id === updateProduct.id ? updateProduct : product
+    );
+    setListProducts(updatedListProducts); // Usa la función pasada desde InformationForm
+    openPopup();
+  };
 
   const handleRemoveProduct = (code) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       const newListProduct = listProducts.filter((product) => product.id !== code);
-      setListProducts(newListProduct);
+      setListProducts(newListProduct); // Usa la función pasada desde InformationForm
     }
   };
 
@@ -72,18 +76,9 @@ const BillTable = () => {
     setTotalPrice(totalPrice)
   }
 
-  const closepopup = () => {
-    console.log("Close popups");
-  }
-
-  const openpopup = () => {
-    console.log("Open popups");
-  }
-
-
   return (
     <div>
-      <Paper sx={{ margin: '1%' }} style={{ height: 700, width: '100%' }}>
+      <Paper sx={{ margin: '1%' }} style={{ height: 350, width: '100%' }}>
         <div style={{ maring: '1%' }}>
           <div style={{ maring: '1%' }}>
             <Button onClick={functionAddProduct} variant="contained" aria-label="outlined"> Add product (+) </Button>
@@ -103,15 +98,14 @@ const BillTable = () => {
               </TableHead>
               <TableBody>
                 {
-                  listProducts.map((row, i) => (
+                  listProducts.map((row) => (
                     <TableRow key={row.id}>
-                      <TableCell>{row.id}</TableCell>
                       <TableCell>{row.name}</TableCell>
                       <TableCell>{row.amount}</TableCell>
                       <TableCell>{row.unitPrice}</TableCell>
                       <TableCell>{row.subtotal}</TableCell>
                       <TableCell>
-                        <Button sx={{ m: 1 }} onClick={() => { handleEditProduct(row.id) }} variant='contained' color="primary" startIcon={<EditIcon />}>
+                        <Button sx={{ m: 1 }} onClick={() => { functionEditProduct(row) }} variant='contained' color="primary" startIcon={<EditIcon />}>
                           Edit
                         </Button>
                         <Button sx={{ m: 1 }} onClick={() => { handleRemoveProduct(row.id) }} variant="contained" color="error" startIcon={<DeleteIcon />} >
@@ -134,6 +128,14 @@ const BillTable = () => {
           </TableContainer>
         </div>
       </Paper>
+
+      <DialogProduct
+        openDialog={openDialog}
+        closePopup={closePopup}
+        titleDialog={titleDialog}
+        handler={isEdit ? handleEditProduct : handleAddProduct}
+        product={product || null}
+      />
     </div>
   )
 }

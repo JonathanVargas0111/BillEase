@@ -1,6 +1,7 @@
 import { Container, Button } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
+import { useState } from 'react';
 
 import BillFormFields from '../molecules/BillFormFields';
 import CompanyFormFields from '../molecules/CompanyFormFields';
@@ -21,6 +22,7 @@ const validationSchema = Yup.object({
 
 
 const InformationForm = () => {
+  const [listProducts, setListProducts] = useState([]);
   const formik = useFormik({
     initialValues: {
       nameCompany: '',
@@ -36,22 +38,25 @@ const InformationForm = () => {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       console.log(values);
+      console.log(listProducts);
     },
 
   })
 
   return (
-    <Container maxWidth='md'>      
-        <form onSubmit={formik.handleSubmit}>
-          <BillFormFields formik={formik} />
-          <CompanyFormFields formik={formik} />
-          <ClientFormFields formik={formik} />
-          <BillTable></BillTable>
-
-          <Button color='primary' variant='contained' fullWidth type='submit'>
-            Save
-          </Button>
-        </form>
+    <Container maxWidth='md'>
+      <form onSubmit={formik.handleSubmit}>
+        <BillFormFields formik={formik} />
+        <CompanyFormFields formik={formik} />
+        <ClientFormFields formik={formik} />
+        <BillTable
+            listProducts={listProducts} // Pasa el estado
+            setListProducts={setListProducts} // Pasa la función para actualizar el estado
+        ></BillTable>
+        <Button color='primary' variant='contained' fullWidth type='submit'>
+          Save
+        </Button>
+      </form>
     </Container>
   )
 }
